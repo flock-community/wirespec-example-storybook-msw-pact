@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="6" failures="0" errors="0" time="0.3412">
+    <testsuite name="src/todo-app.stories.ts" timestamp="2025-04-17T06:45:06.191Z" hostname="APM3LMYF004WRWN" tests="6" failures="0" errors="0" skipped="0" time="0.3412">
+        <testcase classname="src/todo-app.stories.ts" name="Happy Flow Story" time="0.0108">
+        </testcase>
+        <testcase classname="src/todo-app.stories.ts" name="Fetch Error" time="0.0869">
+        </testcase>
+        <testcase classname="src/todo-app.stories.ts" name="Create Todo" time="0.0738">
+        </testcase>
+        <testcase classname="src/todo-app.stories.ts" name="Create Todo Error" time="0.0569">
+            <system-out>
+{
+  &quot;date&quot;: &quot;01-01-2022&quot;,
+  &quot;description&quot;: &quot;new Todo&quot;,
+  &quot;done&quot;: false,
+}
+            </system-out>
+        </testcase>
+        <testcase classname="src/todo-app.stories.ts" name="Remove Todo" time="0.0553">
+        </testcase>
+        <testcase classname="src/todo-app.stories.ts" name="Toggle" time="0.0569">
+        </testcase>
+    </testsuite>
+</testsuites>

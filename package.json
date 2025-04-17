@@ -1,0 +1,35 @@
+{
+  "name": "pact-test",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "compile": "tsc",
+    "test": "vitest run",
+    "generate": "wirespec compile -i ./wirespec -o ./src/gen -l TypeScript -p ''",
+    "storybook": "storybook dev -p 6006"
+  },
+  "dependencies": {
+    "@chromatic-com/storybook": "^3.2.6",
+    "@flock/wirespec": "0.14.3",
+    "@pact-foundation/pact": "^15.0.1",
+    "@storybook/addon-essentials": "^8.4.7",
+    "@storybook/csf": "^0.1.13",
+    "@storybook/experimental-addon-test": "^8.6.12",
+    "@storybook/test": "^8.4.7",
+    "@storybook/web-components": "^8.4.7",
+    "@storybook/web-components-vite": "^8.4.7",
+    "@types/node": "^22.14.1",
+    "@vitest/browser": "^3.1.1",
+    "msw": "^2.7.4",
+    "msw-storybook-addon": "^2.0.4",
+    "playwright": "1.48.0",
+    "shadow-dom-testing-library": "1.11.3",
+    "storybook": "^8.4.7",
+    "typescript": "^5.8.3",
+    "vitest": "^3.1.1"
+  }
+}

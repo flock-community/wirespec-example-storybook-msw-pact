@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./lib",
+    "target": "es2021",
+    "module": "ESNext",
+    "declaration": true,
+    "moduleResolution": "Bundler",
+    "experimentalDecorators": true,
+    "lib": ["es2021", "dom"],
+    "skipLibCheck": true,
+    "strict": true,
+    "strictFunctionTypes": false
+  },
+  "types": ["@storybook/csf"],
+
+  "exclude": ["node_modules"],
+  "include": [
+    "./src",
+    "./.storybook"
+  ]
+}
