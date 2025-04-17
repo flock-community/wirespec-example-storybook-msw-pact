@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuites name="vitest tests" tests="6" failures="0" errors="0" time="0.3412">
-    <testsuite name="src/todo-app.stories.ts" timestamp="2025-04-17T06:45:06.191Z" hostname="APM3LMYF004WRWN" tests="6" failures="0" errors="0" skipped="0" time="0.3412">
-        <testcase classname="src/todo-app.stories.ts" name="Happy Flow Story" time="0.0108">
+<testsuites name="vitest tests" tests="7" failures="0" errors="0" time="0.5004">
+    <testsuite name="src/todo-app.stories.ts" timestamp="2025-04-17T07:55:08.136Z" hostname="APM3LMYF004WRWN" tests="7" failures="0" errors="0" skipped="0" time="0.5004">
+        <testcase classname="src/todo-app.stories.ts" name="Happy Flow Story" time="0.0112">
         </testcase>
-        <testcase classname="src/todo-app.stories.ts" name="Fetch Error" time="0.0869">
+        <testcase classname="src/todo-app.stories.ts" name="Fetch Error" time="0.0824">
         </testcase>
-        <testcase classname="src/todo-app.stories.ts" name="Create Todo" time="0.0738">
+        <testcase classname="src/todo-app.stories.ts" name="Create Todo" time="0.0744">
         </testcase>
-        <testcase classname="src/todo-app.stories.ts" name="Create Todo Error" time="0.0569">
+        <testcase classname="src/todo-app.stories.ts" name="Create Todo Error" time="0.1055">
             <system-out>
 {
   &quot;date&quot;: &quot;01-01-2022&quot;,
@@ -16,9 +16,11 @@
 }
             </system-out>
         </testcase>
-        <testcase classname="src/todo-app.stories.ts" name="Remove Todo" time="0.0553">
+        <testcase classname="src/todo-app.stories.ts" name="Remove Todo" time="0.0552">
         </testcase>
-        <testcase classname="src/todo-app.stories.ts" name="Toggle" time="0.0569">
+        <testcase classname="src/todo-app.stories.ts" name="Toggle" time="0.0585">
+        </testcase>
+        <testcase classname="src/todo-app.stories.ts" name="Toggle Error" time="0.1126">
         </testcase>
     </testsuite>
 </testsuites>

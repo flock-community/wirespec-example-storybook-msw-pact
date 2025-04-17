@@ -142,3 +142,25 @@ export const Toggle: Story = {
         await toggle.click();
     }
 };
+
+export const ToggleError: Story = {
+    async beforeEach() {
+        msw.use(
+            wirespecMsw(GetTodos.api, async () => GetTodos.response200({body: todos, total: 10})),
+            wirespecMsw(PutTodo.api, async (req) => {
+                await expect(req.path).toEqual({id: "2"})
+                await expect(req.body).toEqual({description: 'Todo 2', done: true, date: '01-02-2022'})
+                return PutTodo.response500({body: {reason: "Server error during toggle"}})
+            })
+        )
+    },
+    play: async ({mount}) => {
+        // @ts-ignore
+        const canvas: Canvas = await mount();
+        const toggle = await canvas.findByShadowLabelText("Todo 2");
+        await toggle.click();
+
+        const error = await canvas.findByShadowText("Cannot toggle todo: Server error during toggle")
+        await expect(error).toBeVisible()
+    }
+};
