@@ -1,4 +1,5 @@
 import {http, type HttpHandler, HttpResponse, HttpResponseResolver} from 'msw';
+import {Pact, Interaction} from "./pact";
 
 export type Method = 'GET' | 'PUT' | 'POST' | 'DELETE' | 'OPTIONS' | 'HEAD' | 'PATCH' | 'TRACE';
 export type RawRequest = {
@@ -116,21 +117,22 @@ export const wirespecMsw:WirespecMsw  =
                 const body = contentType ? await ctx.request.text() : undefined;
                 const url = new URL(ctx.request.url);
                 const path = url.pathname.replace(`/`, '').split('/');
-                const rawResponse: RawRequest = {
+                const rawRequest: RawRequest = {
                     method: ctx.request.method.toUpperCase() as Method,
                     path,
                     queries: [...url.searchParams.entries()].reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {}),
                     headers: {},
                     body,
                 };
-                const request = server.from(rawResponse);
+                const request = server.from(rawRequest);
                 const response = await handler(request);
-                const data: RawResponse = server.to(response);
-                if (data.body) {
-                    const json = JSON.parse(data.body);
-                    return HttpResponse.json(json, { status: data.status });
+                const rawResponse: RawResponse = server.to(response);
+                wirespecPact(rawRequest, rawResponse)
+                if (rawResponse.body) {
+                    const json = JSON.parse(rawResponse.body);
+                    return HttpResponse.json(json, { status: rawResponse.status });
                 }
-                return new HttpResponse(null, { status: data.status });
+                return new HttpResponse(null, { status: rawResponse.status });
             };
             switch (api.method) {
                 case 'GET':
@@ -145,3 +147,55 @@ export const wirespecMsw:WirespecMsw  =
                     throw new Error(`Cannot match requst ${api.method}`);
             }
         };
+
+
+const pact: Pact = {
+    consumer: {
+        name: "TodoApp"
+    },
+    provider: {
+        name: "TodoApi"
+    },
+    interactions: [],
+    metadata: {
+        pactSpecification: {
+            version: "4.0"
+        },
+        pactRust: {
+            ffi: "0.4.22",
+            models: "1.2.3"
+        }
+    }
+};
+
+export const wirespecPact = (req:RawRequest, res:RawResponse) => {
+
+    const interaction: Interaction = {
+        description: `${req.method} request to /${req.path.join('/')}`,
+        pending: false,
+        request: {
+            method: req.method,
+            path: `/${req.path.join('/')}`,
+            headers: req.headers,
+            query: Object.keys(req.queries).length > 0 ? req.queries : undefined,
+            body: req.body ? JSON.parse(req.body) : undefined
+        },
+        response: {
+            status: res.status,
+            headers: res.headers,
+            body: res.body ? {
+                content: JSON.parse(res.body),
+                contentType: "application/json",
+                encoded: false
+            } : undefined
+        },
+        type: "Synchronous/HTTP"
+    };
+
+    // Add the new interaction to the in-memory pact
+    pact.interactions.push(interaction);
+
+    // Log that the interaction was captured
+    console.log(`Captured interaction: ${interaction.description}`);
+    console.log(`Total interactions: ${pact.interactions.length}`);
+}

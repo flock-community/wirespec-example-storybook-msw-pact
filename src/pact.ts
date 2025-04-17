@@ -1,7 +1,31 @@
-import {PactV4} from "@pact-foundation/pact";
+export type Interaction = {
+  description: string;
+  pending: boolean;
+  request: {
+    method: string;
+    path: string;
+    headers: Record<string, string>;
+    query?: Record<string, string>;
+    body?: unknown;
+  };
+  response: {
+    status: number;
+    headers: Record<string, string>;
+    body?: {
+      content: unknown;
+      contentType: string;
+      encoded: boolean;
+    };
+  };
+  type: string;
+}
 
-export const pact = new PactV4({
-  consumer: 'consumer-name',
-  provider: 'provider-name'
-})
-
+export type Pact = {
+  consumer: { name: string };
+  provider: { name: string };
+  interactions: Interaction[];
+  metadata: {
+    pactSpecification: { version: string };
+    pactRust: { ffi: string; models: string };
+  };
+}
