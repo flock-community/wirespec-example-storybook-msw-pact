@@ -164,3 +164,25 @@ export const ToggleError: Story = {
         await expect(error).toBeVisible()
     }
 };
+
+export const RemoveTodoError: Story = {
+    async beforeEach() {
+        msw.use(
+            wirespecMsw(GetTodos.api, async () => GetTodos.response200({body: todos, total: 10})),
+            wirespecMsw(DeleteTodo.api, async (req) => {
+                await expect(req.path).toEqual({id: "2"})
+                return DeleteTodo.response500({body: {reason: "Server error during deletion"}})
+            })
+        )
+    },
+    play: async ({mount}) => {
+        // @ts-ignore
+        const canvas: Canvas = await mount();
+        const todoItems = await canvas.findAllByShadowRole('listitem');
+        const deleteButton = await within(todoItems[1]).findByShadowRole("button");
+        await deleteButton.click();
+
+        const error = await canvas.findByShadowText("Error updating todo: Server error during deletion")
+        await expect(error).toBeVisible()
+    }
+};
