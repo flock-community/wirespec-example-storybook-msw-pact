@@ -86,11 +86,32 @@ export const wirespecPact = (req: RawRequest, res: RawResponse) => {
   const interaction: Interaction = {
     // ... interaction details
   };
-  
+
   // Add the interaction to the Pact contract
   pact.interactions.push(interaction);
 }
 ```
+
+## Pact Reporter
+
+This project includes a custom Vitest reporter that automatically generates Pact contract files from API interactions captured during tests:
+
+```typescript
+// Configured in vite.config.ts
+test: {
+    // other configuration...
+    reporters: ['default', 'junit', new PactReporter()]
+}
+```
+
+The Pact reporter:
+
+1. Collects MSW request/response pairs from test files
+2. Transforms them into Pact interactions
+3. Creates a Pact contract file with consumer and provider information
+4. Writes the Pact contract to the "pacts" directory
+
+When you run tests with `npm test`, the reporter automatically generates Pact files that can be used for contract testing with your API providers.
 
 ## Technologies Used
 
