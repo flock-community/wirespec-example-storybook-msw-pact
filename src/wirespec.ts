@@ -1,5 +1,4 @@
 import {http, type HttpHandler, HttpResponse, HttpResponseResolver} from 'msw';
-import {Pact, Interaction} from "./pact";
 
 export type Method = 'GET' | 'PUT' | 'POST' | 'DELETE' | 'OPTIONS' | 'HEAD' | 'PATCH' | 'TRACE';
 export type RawRequest = {
@@ -66,26 +65,26 @@ type WirespecCall = (req: RawRequest) => Promise<RawResponse>
 type WirespecMsw = <Req extends Request<unknown>, Res extends Response<unknown>>(api: Api<Req, Res>, handler: Handler<Req, Res>) => HttpHandler
 
 
-const wirespecCall:WirespecCall = async (req)=> {
-        const headers = req.body ? {'Content-Type': 'application/json'} : undefined;
-        const body = req.body !== undefined ? req.body : undefined;
-        const query = Object.entries(req.queries)
-            .filter(([_, value]) => value !== undefined)
-            .map(([key, value]) => `${key}=${value}`)
-            .join('&');
-        const path = `/${req.path.join('/')}${query ? `?${query}` : ''}`;
-        const res = await fetch(path, {method: req.method, body, headers});
-        const contentType = res.headers.get('Content-Type');
-        const contentLength = res.headers.get('Content-Length');
-        return {
-            status: res.status,
-            headers: {
-                ...headers,
-                ... contentType ? {'Content-Type': contentType} : {},
-            },
-            body: contentLength !== '0' && contentType ? await res.text() : undefined,
-        };
+const wirespecCall: WirespecCall = async (req) => {
+    const headers = req.body ? {'Content-Type': 'application/json'} : undefined;
+    const body = req.body !== undefined ? req.body : undefined;
+    const query = Object.entries(req.queries)
+        .filter(([_, value]) => value !== undefined)
+        .map(([key, value]) => `${key}=${value}`)
+        .join('&');
+    const path = `/${req.path.join('/')}${query ? `?${query}` : ''}`;
+    const res = await fetch(path, {method: req.method, body, headers});
+    const contentType = res.headers.get('Content-Type');
+    const contentLength = res.headers.get('Content-Length');
+    return {
+        status: res.status,
+        headers: {
+            ...headers,
+            ...contentType ? {'Content-Type': contentType} : {},
+        },
+        body: contentLength !== '0' && contentType ? await res.text() : undefined,
     };
+};
 
 export const wirespecClient: WirespecClient =
     (...apis) => {
@@ -94,7 +93,7 @@ export const wirespecClient: WirespecClient =
             {
                 get: (_, prop) => {
                     const api = apis.find((it) => it.name === prop);
-                    if(api === undefined) throw new Error(`Cannot find api with name: ${prop.toString()}`);
+                    if (api === undefined) throw new Error(`Cannot find api with name: ${prop.toString()}`);
                     const client = api.client(serialization);
                     return async (req: Request<unknown>) => {
                         const rawRequest = client.to(req);
@@ -109,93 +108,40 @@ export const wirespecClient: WirespecClient =
         return proxy as any;
     };
 
-export const wirespecMsw:WirespecMsw  =
-        (api, handler) => {
-            const server = api.server(serialization);
-            const resolver: HttpResponseResolver = async (ctx) => {
-                const contentType = ctx.request.headers.get('Content-Type');
-                const body = contentType ? await ctx.request.text() : undefined;
-                const url = new URL(ctx.request.url);
-                const path = url.pathname.replace(`/`, '').split('/');
-                const rawRequest: RawRequest = {
-                    method: ctx.request.method.toUpperCase() as Method,
-                    path,
-                    queries: [...url.searchParams.entries()].reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {}),
-                    headers: {},
-                    body,
-                };
-                const request = server.from(rawRequest);
-                const response = await handler(request);
-                const rawResponse: RawResponse = server.to(response);
-                wirespecPact(rawRequest, rawResponse)
-                if (rawResponse.body) {
-                    const json = JSON.parse(rawResponse.body);
-                    return HttpResponse.json(json, { status: rawResponse.status });
-                }
-                return new HttpResponse(null, { status: rawResponse.status });
+export const wirespecMsw: WirespecMsw =
+    (api, handler) => {
+        const server = api.server(serialization);
+        const resolver: HttpResponseResolver = async (ctx) => {
+            const contentType = ctx.request.headers.get('Content-Type');
+            const body = contentType ? await ctx.request.text() : undefined;
+            const url = new URL(ctx.request.url);
+            const path = url.pathname.replace(`/`, '').split('/');
+            const rawRequest: RawRequest = {
+                method: ctx.request.method.toUpperCase() as Method,
+                path,
+                queries: [...url.searchParams.entries()].reduce((acc, [key, value]) => ({...acc, [key]: value}), {}),
+                headers: {},
+                body,
             };
-            switch (api.method) {
-                case 'GET':
-                    return http.get(`/${api.path}`, resolver);
-                case 'POST':
-                    return http.post(`/${api.path}`, resolver);
-                case 'PUT':
-                    return http.put(`/${api.path}`, resolver);
-                case 'DELETE':
-                    return http.delete(`/${api.path}`, resolver);
-                default:
-                    throw new Error(`Cannot match requst ${api.method}`);
+            const request = server.from(rawRequest);
+            const response = await handler(request);
+            const rawResponse: RawResponse = server.to(response);
+            if (rawResponse.body) {
+                const json = JSON.parse(rawResponse.body);
+                return HttpResponse.json(json, {status: rawResponse.status});
             }
+            return new HttpResponse(null, {status: rawResponse.status});
         };
-
-
-const pact: Pact = {
-    consumer: {
-        name: "TodoApp"
-    },
-    provider: {
-        name: "TodoApi"
-    },
-    interactions: [],
-    metadata: {
-        pactSpecification: {
-            version: "4.0"
-        },
-        pactRust: {
-            ffi: "0.4.22",
-            models: "1.2.3"
+        switch (api.method) {
+            case 'GET':
+                return http.get(`/${api.path}`, resolver);
+            case 'POST':
+                return http.post(`/${api.path}`, resolver);
+            case 'PUT':
+                return http.put(`/${api.path}`, resolver);
+            case 'DELETE':
+                return http.delete(`/${api.path}`, resolver);
+            default:
+                throw new Error(`Cannot match requst ${api.method}`);
         }
-    }
-};
-
-export const wirespecPact = (req:RawRequest, res:RawResponse) => {
-
-    const interaction: Interaction = {
-        description: `${req.method} request to /${req.path.join('/')}`,
-        pending: false,
-        request: {
-            method: req.method,
-            path: `/${req.path.join('/')}`,
-            headers: req.headers,
-            query: Object.keys(req.queries).length > 0 ? req.queries : undefined,
-            body: req.body ? JSON.parse(req.body) : undefined
-        },
-        response: {
-            status: res.status,
-            headers: res.headers,
-            body: res.body ? {
-                content: JSON.parse(res.body),
-                contentType: "application/json",
-                encoded: false
-            } : undefined
-        },
-        type: "Synchronous/HTTP"
     };
-
-    // Add the new interaction to the in-memory pact
-    pact.interactions.push(interaction);
-
-    // Log that the interaction was captured
-    console.log(`Captured interaction: ${interaction.description}`);
-    console.log(`Total interactions: ${pact.interactions.length}`);
-}

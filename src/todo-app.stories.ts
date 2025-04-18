@@ -80,7 +80,6 @@ export const CreateTodoError: Story = {
         msw.use(
             wirespecMsw(GetTodos.api, async () => GetTodos.response200({body: todos, total: 10})),
             wirespecMsw(PostTodo.api, async (req) => {
-                console.log(req.body)
                 await expect(req.body).toEqual({
                     date: "01-01-2022",
                     description: "new Todo",

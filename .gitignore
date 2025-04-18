@@ -1,4 +1,7 @@
 node_modules
 lib
+pacts
+
+src/gen
 
 junit.xml

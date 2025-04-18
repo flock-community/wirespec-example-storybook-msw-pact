@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import { storybookTest } from '@storybook/experimental-addon-test/vitest-plugin';
+import PactReporter from "./src/pactReporter";
 
 export default defineConfig({
     plugins: [storybookTest()],
@@ -11,7 +12,7 @@ export default defineConfig({
             provider: 'playwright',
             headless: true,
         },
-        reporters: ['default', 'junit'],
+        reporters: ['default', 'junit', new PactReporter()],
         outputFile: {
             junit: './junit.xml',
         },
