@@ -10,5 +10,6 @@ jobs:
           node-version: 18
       - run: npm ci
       - run: npx playwright install
+      - run: npm run generate
       - run: npm test
       - run: cat pacts/todo-pact.json
