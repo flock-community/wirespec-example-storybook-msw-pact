@@ -1,6 +1,5 @@
 import {html, LitElement, nothing} from 'lit';
 import {customElement, state} from 'lit/decorators.js';
-import {styleMap} from 'lit/directives/style-map.js';
 import {client} from "./client";
 import {DeleteTodo, GetTodos, PostTodo, PutTodo} from "./gen/Todo";
 
@@ -54,13 +53,13 @@ export class TodoApp extends LitElement {
             return html`<h1>${this.error}</h1>`
         }
         return html`
-            <div class="container mx-auto p-4 max-w-md">
-                <h1 class="text-3xl font-bold mb-4">Todo App</h1>
+            <div>
+                <h1>Todo App</h1>
 
                 ${this.message ? html`
-                    <div class="text-red-500">${this.message}</div>` : nothing}
+                    <div>${this.message}</div>` : nothing}
 
-                <div class="flex gap-2 mb-4">
+                <div>
                     <label for="todoText">Todo text</label>
                     <input
                             id="todoText"
@@ -68,35 +67,26 @@ export class TodoApp extends LitElement {
                             .value=${this.newTodoText}
                             @input=${(e: InputEvent) => this.newTodoText = (e.target as HTMLInputElement).value}
                             @keyup=${(e: KeyboardEvent) => e.key === 'Enter' && this.addTodo()}
-                            class="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
                             placeholder="Add a new todo"
                     >
                     <button
                             @click=${this.addTodo}
-                            class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 focus:outline-none"
                     >
                         Add
                     </button>
                 </div>
 
-                <ul class="space-y-2">
+                <ul>
                     ${this.todos.map(todo => html`
-                        <li
-                                class="flex items-center gap-2 p-2 border rounded-lg"
-                                style=${styleMap({
-                        textDecoration: todo.completed ? 'line-through' : 'none',
-                        backgroundColor: todo.completed ? '#f3f4f6' : 'white'
-                    })}>
+                        <li>
                         <input
                                 type="checkbox"
                                 .checked=${todo.completed}
                                 @change=${() => this.toggleTodo(todo)}
-                                class="h-5 w-5"
                                 id="todo-${todo.id}"
                         >
-                        <label for="todo-${todo.id}" class="flex-1">${todo.text}</label>
-                        <button @click=${() => this.deleteTodo(todo.id)}
-                                class="text-red-500 hover:text-red-700">✕</button>
+                        <label for="todo-${todo.id}">${todo.text}</label>
+                        <button @click=${() => this.deleteTodo(todo.id)}>✕</button>
                         </li>
                     `)}
                 </ul>
