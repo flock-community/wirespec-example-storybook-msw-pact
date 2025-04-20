@@ -9,17 +9,25 @@ import {Canvas} from "@storybook/csf";
 
 import {html} from "lit";
 import {within} from "shadow-dom-testing-library";
+import { TodoApp } from './todo-app';
 
 const msw = getWorker();
 
 const meta = {
     title: 'Todo app',
-    render: () => html`
-        <todo-app></todo-app>`,
-} satisfies Meta<unknown>;
+    component: 'todo-app',
+    parameters: {
+        backgrounds: {
+            disable: true,
+        },
+    },
+    render: (args, { globals: { darkMode } }) => {
+        return html`<todo-app .darkMode=${darkMode === 'dark'}></todo-app>`;
+    },
+} satisfies Meta<TodoApp>;
 
 export default meta;
-type Story = StoryObj<unknown>;
+type Story = StoryObj<TodoApp>;
 
 const todos: Todo[] = [
     {"id": 1, "description": "Todo 1", "done": true, "date": "01-01-2022"},
