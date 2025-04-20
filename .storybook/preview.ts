@@ -1,6 +1,7 @@
 import type {Preview} from '@storybook/web-components'
 import {initialize, mswLoader} from 'msw-storybook-addon'
 import { within as withinShadow } from 'shadow-dom-testing-library';
+import '../src/styles/main.css';
 
 // Initialize MSW
 initialize({

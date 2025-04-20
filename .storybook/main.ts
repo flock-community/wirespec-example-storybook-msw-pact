@@ -13,6 +13,11 @@ const config: StorybookConfig = {
   "framework": {
     "name": "@storybook/web-components-vite",
     "options": {}
+  },
+  "staticDirs": ["../public"],
+  "viteFinal": async (config) => {
+    // Add any custom Vite configuration here
+    return config;
   }
 };
 export default config;
