@@ -11,5 +11,6 @@ jobs:
       - run: npm ci
       - run: npx playwright install
       - run: npm run generate
+      - run: npm run compile
       - run: npm test
       - run: cat pacts/todo-pact.json

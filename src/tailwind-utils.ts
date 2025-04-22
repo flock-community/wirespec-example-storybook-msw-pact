@@ -7,11 +7,14 @@ import styles from './styles/main.css?inline';
  * @param baseClass The base class to extend (usually LitElement)
  * @returns A class that extends the base class with Tailwind CSS support
  */
-export function withTailwind<T extends typeof LitElement>(baseClass: T) {
+export function withTailwind(baseClass: typeof LitElement): typeof LitElement {
+  const existingStyles = baseClass.styles || [];
+  const arrayStyles = Array.isArray(existingStyles) ? existingStyles : [existingStyles];
+
   return class extends baseClass {
     static styles = [
       unsafeCSS(styles),
-      ...(Array.isArray(baseClass.styles) ? baseClass.styles : [baseClass.styles]).filter(Boolean)
+      ...arrayStyles.filter(Boolean)
     ];
   };
 }
