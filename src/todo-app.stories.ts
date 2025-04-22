@@ -46,6 +46,11 @@ export const HappyFlowStory: Story = {
             wirespecMsw(GetCurrentUser.api, async () => GetCurrentUser.response200({body: user})),
             wirespecMsw(GetTodos.api, async () => GetTodos.response200({body: todos, total: 10})),
         )
+    },
+    play: async ({mount}) => {
+        const canvas = await mount() as unknown as Canvas;
+        const welcomeMessage = await canvas.findByShadowText(`Welcome, ${user.username}`);
+        await expect(welcomeMessage).toBeVisible();
     }
 };
 
