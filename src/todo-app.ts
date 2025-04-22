@@ -1,8 +1,14 @@
 import {html, LitElement, nothing} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
-import {client} from "./client";
-import {DeleteTodo, GetTodos, PostTodo, PutTodo} from "./gen/Todo";
+import {todoClient, userClient} from "./todoClient";
+import {DeleteTodo, GetTodos, PostTodo, PutTodo} from "./gen/todo/Todo";
 import {withTailwind} from "./tailwind-utils";
+import {GetCurrentUser} from "./gen/user/User";
+
+
+type LoggedInUser = {
+    name: string;
+}
 
 type TodoItem = {
     id: string;
@@ -21,6 +27,9 @@ export class TodoApp extends withTailwind(LitElement) {
     private todos: TodoItem[] = [];
 
     @state()
+    private user?: LoggedInUser = undefined;
+
+    @state()
     private message: string | undefined = undefined;
 
     @state()
@@ -31,15 +40,30 @@ export class TodoApp extends withTailwind(LitElement) {
 
     async connectedCallback() {
         super.connectedCallback();
-        await this.load()
+        await Promise.all([
+            this.loadTodo(),
+            this.loadUser()
+        ])
     }
 
-    private async load(){
+    private async loadUser(){
+        const req = GetCurrentUser.request()
+        const res = await userClient.getCurrentUser(req)
+        if (res.status == 200) {
+            this.user = {
+                name: res.body.username
+            }
+        } else {
+            this.error = `Cannot fetch current user`
+        }
+    }
+
+    private async loadTodo(){
         const req = GetTodos.request({
             limit: 10,
             offset: 0,
         })
-        const res = await client.getTodos(req)
+        const res = await todoClient.getTodos(req)
         if (res.status == 200) {
             this.todos = res.body.map(it => ({
                 id: it.id.toString(),
@@ -132,7 +156,7 @@ export class TodoApp extends withTailwind(LitElement) {
                 date: "01-01-2022"
             }
         })
-        const res = await client.postTodo(req)
+        const res = await todoClient.postTodo(req)
         if (res.status === 200) {
             this.newTodoText = '';
         } else {
@@ -149,9 +173,9 @@ export class TodoApp extends withTailwind(LitElement) {
                 date: it.date
             }
         })
-        const res = await client.putTodo(req)
+        const res = await todoClient.putTodo(req)
         if (res.status === 200) {
-            await this.load()
+            await this.loadTodo()
         } else if(res.status === 500) {
             this.message = `Cannot toggle todo: ${res.body.reason}`
         } else {
@@ -161,7 +185,7 @@ export class TodoApp extends withTailwind(LitElement) {
 
     private async deleteTodo(id: string) {
         const req = DeleteTodo.request({id: parseInt(id)})
-        const res = await client.deleteTodo(req)
+        const res = await todoClient.deleteTodo(req)
         if (res.status === 200) {
             this.message = "Successfully deleted todo"
         } else {

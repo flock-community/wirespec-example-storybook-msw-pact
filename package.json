@@ -9,7 +9,9 @@
   "scripts": {
     "compile": "tsc",
     "test": "vitest run",
-    "generate": "wirespec compile -i ./wirespec -o ./src/gen -l TypeScript -p ''",
+    "generate": "npm run generate:todo && npm run generate:user ",
+    "generate:todo": "wirespec compile -i ./wirespec -o ./src/gen/todo -l TypeScript -p ''",
+    "generate:user": "wirespec convert OpenApiv3 -i ./openapi/user.json -o ./src/gen/user -l TypeScript -p ''",
     "storybook": "storybook dev -p 6006"
   },
   "dependencies": {

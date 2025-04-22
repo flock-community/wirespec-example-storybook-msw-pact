@@ -3,13 +3,14 @@ import {expect, userEvent} from '@storybook/test';
 
 import './todo-app'
 import {getWorker} from "msw-storybook-addon";
-import {DeleteTodo, GetTodos, PostTodo, PutTodo, Todo} from "./gen/Todo";
+import {DeleteTodo, GetTodos, PostTodo, PutTodo, Todo} from "./gen/todo/Todo";
 import {wirespecMsw} from "./wirespec";
 import {Canvas} from "@storybook/csf";
 
 import {html} from "lit";
 import {within} from "shadow-dom-testing-library";
 import { TodoApp } from './todo-app';
+import {GetCurrentUser, User} from "./gen/user/User";
 
 const msw = getWorker();
 
@@ -29,6 +30,11 @@ const meta = {
 export default meta;
 type Story = StoryObj<TodoApp>;
 
+const user: User = {
+    id: 1,
+    email: "pieter@mail.com",
+    username: "pietter"
+}
 const todos: Todo[] = [
     {"id": 1, "description": "Todo 1", "done": true, "date": "01-01-2022"},
     {"id": 2, "description": "Todo 2", "done": false, "date": "01-02-2022"}
@@ -37,6 +43,7 @@ const todos: Todo[] = [
 export const HappyFlowStory: Story = {
     async beforeEach() {
         msw.use(
+            wirespecMsw(GetCurrentUser.api, async () => GetCurrentUser.response200({body: user})),
             wirespecMsw(GetTodos.api, async () => GetTodos.response200({body: todos, total: 10})),
         )
     }
@@ -45,6 +52,7 @@ export const HappyFlowStory: Story = {
 export const FetchError: Story = {
     async beforeEach() {
         msw.use(
+            wirespecMsw(GetCurrentUser.api, async () => GetCurrentUser.response200({body: user})),
             wirespecMsw(GetTodos.api, async () => GetTodos.response500({body: {reason: "server error"}})),
         )
     },
@@ -61,6 +69,7 @@ export const CreateTodo: Story = {
             {"id": 3, "description": "Todo1", "done": true, "date": "01-03-2022"}
 
         msw.use(
+            wirespecMsw(GetCurrentUser.api, async () => GetCurrentUser.response200({body: user})),
             wirespecMsw(GetTodos.api, async () => GetTodos.response200({body: todos, total: 10})),
             wirespecMsw(PostTodo.api, async (req) => {
                 await expect(req.body).toEqual({
@@ -84,6 +93,7 @@ export const CreateTodo: Story = {
 export const CreateTodoError: Story = {
     async beforeEach() {
         msw.use(
+            wirespecMsw(GetCurrentUser.api, async () => GetCurrentUser.response200({body: user})),
             wirespecMsw(GetTodos.api, async () => GetTodos.response200({body: todos, total: 10})),
             wirespecMsw(PostTodo.api, async (req) => {
                 await expect(req.body).toEqual({
@@ -111,6 +121,7 @@ export const RemoveTodo: Story = {
     async beforeEach() {
         const todo = {"id": 2, "description": "Todo1", "done": true, "date": "01-03-2022"}
         msw.use(
+            wirespecMsw(GetCurrentUser.api, async () => GetCurrentUser.response200({body: user})),
             wirespecMsw(GetTodos.api, async () => GetTodos.response200({body: todos, total: 10})),
             wirespecMsw(DeleteTodo.api, async (req) => {
                 await expect(req.path).toEqual({id: "2"})
@@ -130,6 +141,7 @@ export const Toggle: Story = {
     async beforeEach() {
         const todo = {"id": 2, "description": "Todo1", "done": true, "date": "01-03-2022"}
         msw.use(
+            wirespecMsw(GetCurrentUser.api, async () => GetCurrentUser.response200({body: user})),
             wirespecMsw(GetTodos.api, async () => GetTodos.response200({body: todos, total: 10})),
             wirespecMsw(PutTodo.api, async (req) => {
                 await expect(req.path).toEqual({id: "2"})
@@ -148,6 +160,7 @@ export const Toggle: Story = {
 export const ToggleError: Story = {
     async beforeEach() {
         msw.use(
+            wirespecMsw(GetCurrentUser.api, async () => GetCurrentUser.response200({body: user})),
             wirespecMsw(GetTodos.api, async () => GetTodos.response200({body: todos, total: 10})),
             wirespecMsw(PutTodo.api, async (req) => {
                 await expect(req.path).toEqual({id: "2"})
@@ -169,6 +182,7 @@ export const ToggleError: Story = {
 export const RemoveTodoError: Story = {
     async beforeEach() {
         msw.use(
+            wirespecMsw(GetCurrentUser.api, async () => GetCurrentUser.response200({body: user})),
             wirespecMsw(GetTodos.api, async () => GetTodos.response200({body: todos, total: 10})),
             wirespecMsw(DeleteTodo.api, async (req) => {
                 await expect(req.path).toEqual({id: "2"})

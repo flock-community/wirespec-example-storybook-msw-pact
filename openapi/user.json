@@ -1,0 +1,75 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Simple User API",
+    "version": "1.0.0",
+    "description": "An API to retrieve user information."
+  },
+  "servers": [
+    {
+      "url": "http://api.example.com/v1",
+      "description": "Production server"
+    }
+  ],
+  "paths": {
+    "/users/me": {
+      "get": {
+        "summary": "Get current user details",
+        "description": "Retrieves the details of the currently authenticated user.",
+        "operationId": "getCurrentUser",
+        "tags": [
+          "Users"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved user details.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Authentication required."
+          },
+          "403": {
+            "description": "Forbidden - User does not have permission."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Unique identifier for the user.",
+            "example": 12345
+          },
+          "username": {
+            "type": "string",
+            "description": "The user's username.",
+            "example": "currentUser123"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "The user's email address.",
+            "example": "user@example.com"
+          }
+        },
+        "required": [
+          "id",
+          "username",
+          "email"
+        ]
+      }
+    }
+  }
+}
