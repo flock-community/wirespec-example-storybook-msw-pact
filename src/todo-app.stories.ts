@@ -205,3 +205,17 @@ export const RemoveTodoError: Story = {
         await expect(error).toBeVisible()
     }
 };
+
+export const UserApiError: Story = {
+    async beforeEach() {
+        msw.use(
+            wirespecMsw(GetCurrentUser.api, async () => GetCurrentUser.response401()),
+            wirespecMsw(GetTodos.api, async () => GetTodos.response200({body: todos, total: 10}))
+        )
+    },
+    play: async ({mount}) => {
+        const canvas = await mount() as unknown as Canvas;
+        const error = await canvas.findByShadowText("Cannot fetch current user")
+        await expect(error).toBeVisible()
+    }
+};
