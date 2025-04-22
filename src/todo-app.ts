@@ -95,7 +95,12 @@ export class TodoApp extends withTailwind(LitElement) {
             <div class="${containerClass}">
                 <div class="p-4 max-w-md mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-md">
                     <div class="flex justify-between items-center mb-4">
-                        <h1 class="text-2xl font-bold text-blue-600 dark:text-blue-400">Todo App</h1>
+                        <div>
+                            <h1 class="text-2xl font-bold text-blue-600 dark:text-blue-400">Todo App</h1>
+                            ${this.user ? html`
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Welcome, ${this.user.name}</p>
+                            ` : nothing}
+                        </div>
                         <button 
                             class="p-2 bg-gray-200 dark:bg-gray-600 rounded-full"
                             @click=${this.toggleDarkMode}
