@@ -49,8 +49,7 @@ export const FetchError: Story = {
         )
     },
     play: async ({mount}) => {
-        // @ts-ignore
-        const canvas: Canvas = await mount();
+        const canvas = await mount() as unknown as Canvas;
         const error = await canvas.findByShadowText("Cannot fetch todos: server error")
         await expect(error).toBeVisible()
     }
@@ -74,8 +73,7 @@ export const CreateTodo: Story = {
         )
     },
     play: async ({mount}) => {
-        // @ts-ignore
-        const canvas: Canvas = await mount();
+        const canvas = await mount() as unknown as Canvas;
         const input = await canvas.findByShadowLabelText('Todo text');
         const button = await canvas.findByShadowRole('button', {name: "Add"});
         await userEvent.type(input, "new Todo")
@@ -98,8 +96,7 @@ export const CreateTodoError: Story = {
         )
     },
     play: async ({mount}) => {
-        // @ts-ignore
-        const canvas: Canvas = await mount();
+        const canvas = await mount() as unknown as Canvas;
         const input = await canvas.findByShadowLabelText('Todo text');
         const button = await canvas.findByShadowRole('button', {name: "Add"});
         await userEvent.type(input, "new Todo")
@@ -122,8 +119,7 @@ export const RemoveTodo: Story = {
         )
     },
     play: async ({mount}) => {
-        // @ts-ignore
-        const canvas: Canvas = await mount();
+        const canvas = await mount() as unknown as Canvas;
         const todoItems = await canvas.findAllByShadowRole('listitem');
         const deleteButton = await within(todoItems[1]).findByShadowRole("button");
         await deleteButton.click();
@@ -143,8 +139,7 @@ export const Toggle: Story = {
         )
     },
     play: async ({mount}) => {
-        // @ts-ignore
-        const canvas: Canvas = await mount();
+        const canvas = await mount() as unknown as Canvas;
         const toggle = await canvas.findByShadowLabelText("Todo 2");
         await toggle.click();
     }
@@ -162,8 +157,7 @@ export const ToggleError: Story = {
         )
     },
     play: async ({mount}) => {
-        // @ts-ignore
-        const canvas: Canvas = await mount();
+        const canvas = await mount() as unknown as Canvas;
         const toggle = await canvas.findByShadowLabelText("Todo 2");
         await toggle.click();
 
@@ -183,8 +177,7 @@ export const RemoveTodoError: Story = {
         )
     },
     play: async ({mount}) => {
-        // @ts-ignore
-        const canvas: Canvas = await mount();
+        const canvas = await mount() as unknown as Canvas;
         const todoItems = await canvas.findAllByShadowRole('listitem');
         const deleteButton = await within(todoItems[1]).findByShadowRole("button");
         await deleteButton.click();
