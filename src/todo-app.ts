@@ -1,9 +1,7 @@
 import {html, LitElement, nothing} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
 import {todoClient, userClient} from "./todoClient";
-import {DeleteTodo, GetTodos, PostTodo, PutTodo} from "./gen/todo/Todo";
 import {withTailwind} from "./tailwind-utils";
-import {GetCurrentUser} from "./gen/user/User";
 
 
 type LoggedInUser = {
@@ -47,8 +45,7 @@ export class TodoApp extends withTailwind(LitElement) {
     }
 
     private async loadUser(){
-        const req = GetCurrentUser.request()
-        const res = await userClient.getCurrentUser(req)
+        const res = await userClient.getCurrentUser()
         if (res.status == 200) {
             this.user = {
                 name: res.body.username
@@ -59,11 +56,7 @@ export class TodoApp extends withTailwind(LitElement) {
     }
 
     private async loadTodo(){
-        const req = GetTodos.request({
-            limit: 10,
-            offset: 0,
-        })
-        const res = await todoClient.getTodos(req)
+        const res = await todoClient.getTodos({limit: 10, offset: 0})
         if (res.status == 200) {
             this.todos = res.body.map(it => ({
                 id: it.id.toString(),
@@ -154,14 +147,13 @@ export class TodoApp extends withTailwind(LitElement) {
     }
 
     private async addTodo() {
-        const req = PostTodo.request({
+        const res = await todoClient.postTodo({
             body: {
                 description: this.newTodoText,
                 done: false,
                 date: "01-01-2022"
             }
         })
-        const res = await todoClient.postTodo(req)
         if (res.status === 200) {
             this.newTodoText = '';
         } else {
@@ -170,7 +162,7 @@ export class TodoApp extends withTailwind(LitElement) {
     }
 
     private async toggleTodo(it: TodoItem) {
-        const req = PutTodo.request({
+        const res = await todoClient.putTodo({
             id: parseInt(it.id),
             body: {
                 description: it.text,
@@ -178,7 +170,6 @@ export class TodoApp extends withTailwind(LitElement) {
                 date: it.date
             }
         })
-        const res = await todoClient.putTodo(req)
         if (res.status === 200) {
             await this.loadTodo()
         } else if(res.status === 500) {
@@ -189,8 +180,7 @@ export class TodoApp extends withTailwind(LitElement) {
     }
 
     private async deleteTodo(id: string) {
-        const req = DeleteTodo.request({id: parseInt(id)})
-        const res = await todoClient.deleteTodo(req)
+        const res = await todoClient.deleteTodo({id: parseInt(id)})
         if (res.status === 200) {
             this.message = "Successfully deleted todo"
         } else {

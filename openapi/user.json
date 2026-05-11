@@ -54,13 +54,13 @@
           },
           "username": {
             "type": "string",
-            "description": "The user's username.",
+            "description": "The username of the user.",
             "example": "currentUser123"
           },
           "email": {
             "type": "string",
             "format": "email",
-            "description": "The user's email address.",
+            "description": "The email address of the user.",
             "example": "user@example.com"
           }
         },

@@ -8,15 +8,16 @@
   "main": "index.js",
   "scripts": {
     "compile": "tsc",
+    "build": "npm run generate && npm run compile",
     "test": "vitest run",
-    "generate": "npm run generate:todo && npm run generate:user ",
-    "generate:todo": "wirespec compile -i ./wirespec -o ./src/gen/todo -l TypeScript -p ''",
-    "generate:user": "wirespec convert OpenApiv3 -i ./openapi/user.json -o ./src/gen/user -l TypeScript -p ''",
+    "generate": "npm run generate:todo && npm run generate:user && node scripts/rebuild-gen-indexes.mjs",
+    "generate:todo": "wirespec compile -i ./wirespec -o ./src/gen -l TypeScript --shared --ir",
+    "generate:user": "wirespec convert OpenApiv3 -i ./openapi/user.json -o ./src/gen -l TypeScript --shared --ir",
     "storybook": "storybook dev -p 6006"
   },
   "dependencies": {
     "@chromatic-com/storybook": "^3.2.6",
-    "@flock/wirespec": "0.14.3",
+    "@flock/wirespec": "file:/Users/wilmveel/Projects/wirespec/src/plugin/npm/build/dist/js/productionLibrary",
     "@pact-foundation/pact": "^15.0.1",
     "@storybook/addon-essentials": "^8.4.7",
     "@storybook/csf": "^0.1.13",
