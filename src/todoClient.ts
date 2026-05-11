@@ -1,16 +1,17 @@
-import {GetTodos, PostTodo, DeleteTodo, PutTodo} from "./gen/todo/Todo";
-import {GetCurrentUser} from "./gen/user/User";
-import {wirespecClient} from "./wirespec";
+import {getCurrentUserClient} from "./gen/client/GetCurrentUserClient";
+import {getTodosClient} from "./gen/client/GetTodosClient";
+import {postTodoClient} from "./gen/client/PostTodoClient";
+import {putTodoClient} from "./gen/client/PutTodoClient";
+import {deleteTodoClient} from "./gen/client/DeleteTodoClient";
+import {serialization, transportation} from "./wirespec";
 
-export const userClient = wirespecClient(
-    GetCurrentUser.api,
-)
+export const userClient = {
+    ...getCurrentUserClient(serialization, transportation),
+};
 
-export const todoClient = wirespecClient(
-    GetTodos.api,
-    PostTodo.api,
-    PutTodo.api,
-    DeleteTodo.api
-)
-
-
+export const todoClient = {
+    ...getTodosClient(serialization, transportation),
+    ...postTodoClient(serialization, transportation),
+    ...putTodoClient(serialization, transportation),
+    ...deleteTodoClient(serialization, transportation),
+};
