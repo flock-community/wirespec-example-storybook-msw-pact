@@ -20,7 +20,7 @@
     "@pact-foundation/pact": "^15.0.1",
     "@storybook/addon-essentials": "^8.4.7",
     "@storybook/csf": "^0.1.13",
-    "@storybook/experimental-addon-test": "^8.6.12",
+    "@storybook/experimental-addon-test": "^8.6.19",
     "@storybook/test": "^8.4.7",
     "@storybook/web-components": "^8.4.7",
     "@storybook/web-components-vite": "^8.4.7",
